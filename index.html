@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherUI Studio v4.5 // 124+ Komponen Modular, A11y & Handoff</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        accent: {
+                            50: 'rgb(var(--accent-50) / <alpha-value>)',
+                            100: 'rgb(var(--accent-100) / <alpha-value>)',
+                            200: 'rgb(var(--accent-200) / <alpha-value>)',
+                            300: 'rgb(var(--accent-300) / <alpha-value>)',
+                            400: 'rgb(var(--accent-400) / <alpha-value>)',
+                            500: 'rgb(var(--accent-500) / <alpha-value>)',
+                            600: 'rgb(var(--accent-600) / <alpha-value>)',
+                            700: 'rgb(var(--accent-700) / <alpha-value>)',
+                            800: 'rgb(var(--accent-800) / <alpha-value>)',
+                            900: 'rgb(var(--accent-900) / <alpha-value>)',
+                        }
+                    },
+                    transitionTimingFunction: {
+                        'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* =====================================================================
+           DESIGN TOKENS: DYNAMIC ACCENT, RADIUS & MOTION SPEED
+        ====================================================================== */
+        :root {
+            --accent-50: 238 242 255;
+            --accent-100: 224 231 255;
+            --accent-200: 199 210 254;
+            --accent-300: 165 180 252;
+            --accent-400: 129 140 248;
+            --accent-500: 99 102 241;
+            --accent-600: 79 70 229;
+            --accent-700: 67 56 202;
+            --accent-800: 55 48 163;
+            --accent-900: 49 46 129;
+
+            --ui-radius: 12px;
+            --ui-radius-lg: 18px;
+            --motion-duration: 0.35s;
+            --motion-curve: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            --surface-bg: #f6f8fc;
+            --surface-card: rgba(255, 255, 255, 0.86);
+            --border-hairline: rgba(148, 163, 184, 0.25);
+            --dot-color: rgba(100, 116, 139, 0.16);
+        }
+
+        html.dark {
+            --surface-bg: #050811;
+            --surface-card: rgba(13, 19, 34, 0.78);
+            --border-hairline: rgba(148, 163, 184, 0.14);
+            --dot-color: rgba(148, 163, 184, 0.12);
+        }
+
+        body {
+            background-color: var(--surface-bg);
+            transition: background-color 0.35s ease, color 0.35s ease;
+            overflow-x: hidden;
+        }
+
+        /* Simulasi Mode Buta Warna (Deuteranopia Filter) */
+        body.sim-deuteranopia {
+            filter: sepia(22%) hue-rotate(-14deg) saturate(85%);
+        }
+
+        /* Simulasi Kontras Ultra Tinggi */
+        body.sim-high-contrast {
+            filter: contrast(122%);
+        }
+
+        /* Architectural Dot-Grid Overlay */
+        .dot-grid-pattern {
+            background-image: radial-gradient(var(--dot-color) 1.25px, transparent 1.25px);
+            background-size: 24px 24px;
+        }
+
+        /* Ambient Moving Aurora Glow */
+        @keyframes auroraFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(35px, -25px) scale(1.07); }
+            66% { transform: translate(-25px, 20px) scale(0.95); }
+        }
+        .aurora-orb-1 {
+            animation: auroraFloat 18s ease-in-out infinite;
+        }
+        .aurora-orb-2 {
+            animation: auroraFloat 23s ease-in-out infinite reverse;
+        }
+
+        /* Luminous Glass Card with Dynamic Radius */
+        .luminous-card {
+            background: var(--surface-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-hairline);
+            border-radius: var(--ui-radius-lg);
+            box-shadow: 0 8px 32px -8px rgba(2, 6, 23, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+            transition: transform var(--motion-duration) var(--motion-curve), border-color 0.25s ease, box-shadow 0.25s ease, border-radius 0.3s ease;
+        }
+        .luminous-card:hover {
+            border-color: rgb(var(--accent-500) / 0.38);
+        }
+
+        .dynamic-rounded {
+            border-radius: var(--ui-radius) !important;
+            transition: border-radius 0.3s ease, transform var(--motion-duration) var(--motion-curve), background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.28); border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgb(var(--accent-500) / 0.6); }
+
+        /* Ripple Effect */
+        .btn-ripple { position: relative; overflow: hidden; }
+        .ripple-circle {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: rippleAnim 0.55s ease-out;
+            background-color: rgba(255, 255, 255, 0.38);
+            pointer-events: none;
+        }
+        @keyframes rippleAnim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* Spring Toggle */
+        .spring-thumb {
+            transition: transform var(--motion-duration) var(--motion-curve);
+        }
+
+        /* Skeleton Shimmer */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton-shimmer {
+            background: linear-gradient(90deg, rgba(148,163,184,0.12) 25%, rgba(148,163,184,0.28) 50%, rgba(148,163,184,0.12) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+
+        /* 3D Tilt Card Perspective */
+        .tilt-wrapper {
+            perspective: 1000px;
+        }
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.18s ease-out, box-shadow 0.25s ease;
+        }
+
+        /* Focus Ring A11y */
+        *:focus-visible {
+            outline: 2px solid rgb(var(--accent-400));
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans text-slate-900 dark:text-slate-100 antialiased relative">
+
+    <!-- Ambient Moving Aurora Mesh Background -->
+    <div aria-hidden="true" class="fixed inset-0 pointer-events-none overflow-hidden z-0 dot-grid-pattern">
+        <div class="aurora-orb-1 absolute -top-32 -left-24 w-[480px] h-[480px] rounded-full bg-accent-500/15 dark:bg-accent-600/20 blur-[110px]"></div>
+        <div class="aurora-orb-2 absolute top-1/3 -right-32 w-[440px] h-[440px] rounded-full bg-cyan-500/12 dark:bg-cyan-500/15 blur-[110px]"></div>
+        <div class="aurora-orb-1 absolute -bottom-32 left-1/3 w-[520px] h-[520px] rounded-full bg-purple-500/10 dark:bg-violet-600/15 blur-[120px]"></div>
+    </div>
+
+    <!-- Live Toast Notification Stack -->
+    <div id="toast-container" aria-live="polite" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- =====================================================================
+         1. STICKY GLASS TOP HEADER
+    ====================================================================== -->
+    <header class="sticky top-0 z-30 backdrop-blur-xl bg-white/80 dark:bg-[#050811]/80 border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
+        <div class="max-w-[1680px] mx-auto px-4 lg:px-6 py-3 flex items-center justify-between gap-3">
+            
+            <!-- Left: Sidebar Toggle + Brand -->
+            <div class="flex items-center gap-3">
+                <button id="btn-toggle-sidebar" type="button" aria-label="Buka/Tutup Navigasi Katalog" class="w-9 h-9 dynamic-rounded bg-slate-100 dark:bg-slate-900/90 hover:bg-accent-600 hover:text-white border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 transition">
+                    <i class="fa-solid fa-bars-staggered text-sm"></i>
+                </button>
+
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 dynamic-rounded bg-gradient-to-br from-accent-500 to-accent-700 text-white flex items-center justify-center shadow-lg shadow-accent-600/30">
+                        <i class="fa-solid fa-cubes text-base"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-display font-extrabold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white">
+                                Aether<span class="text-accent-600 dark:text-accent-400">UI</span>
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-accent-500/15 text-accent-700 dark:text-accent-300 border border-accent-500/30">
+                                STUDIO v4.5
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">124 Komponen Modular • Figma &amp; Tailwind CSS</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center: Global Search Bar with ⌘K -->
+            <div class="hidden md:flex items-center flex-1 max-w-md mx-4">
+                <div class="relative w-full">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <input id="global-search-input" type="text" placeholder="Cari 124+ komponen (Button, Pricing, OTP, Modal)..." class="w-full dynamic-rounded bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:border-accent-500 pl-9 pr-14 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-500 transition">
+                    <kbd class="absolute right-2.5 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-mono rounded bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">⌘K</kbd>
+                </div>
+            </div>
+
+            <!-- Right: WCAG Badge, Day/Night Toggle & Handoff Actions -->
+            <div class="flex items-center gap-2">
+                <div class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 dynamic-rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-mono">
+                    <i class="fa-solid fa-universal-access text-emerald-600 dark:text-emerald-400"></i>
+                    <span>WCAG AAA <strong id="wcag-header-ratio">15.2:1</strong></span>
+                </div>
+
+                <button id="btn-theme-toggle" type="button" class="flex items-center gap-2 px-3 py-2 dynamic-rounded bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-semibold transition active:scale-95">
+                    <i id="theme-icon" class="fa-solid fa-moon text-accent-500"></i>
+                    <span id="theme-label" class="hidden sm:inline">Mode Malam</span>
+                </button>
+
+                <button id="btn-open-figma-tokens" type="button" class="flex items-center gap-1.5 px-3 py-2 dynamic-rounded bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-semibold transition active:scale-95">
+                    <i class="fa-brands fa-figma text-rose-500"></i>
+                    <span class="hidden sm:inline">Figma Tokens</span>
+                </button>
+
+                <button id="btn-open-tailwind-cfg" type="button" class="btn-ripple flex items-center gap-1.5 px-3.5 py-2 dynamic-rounded bg-accent-600 hover:bg-accent-700 text-white text-xs font-bold shadow-md shadow-accent-600/25 transition active:scale-95">
+                    <i class="fa-solid fa-code"></i>
+                    <span>Handoff Kit</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         2. MAIN LAYOUT: COLLAPSIBLE SIDEBAR + WORKSPACE
+    ====================================================================== -->
+    <div class="relative z-10 flex-1 max-w-[1680px] w-full mx-auto flex">
+        
+        <!-- Collapsible Desktop & Mobile Drawer Sidebar -->
+        <aside id="studio-sidebar" class="w-64 shrink-0 border-r border-slate-200/80 dark:border-slate-800/80 bg-white/75 dark:bg-[#070b16]/85 backdrop-blur-xl p-4 hidden lg:flex flex-col justify-between gap-6 transition-all duration-300">
+            <div class="space-y-6">
+                <!-- Progress Eksplorasi -->
+                <div class="p-3.5 dynamic-rounded bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center justify-between text-[11px] font-mono mb-1.5">
+                        <span class="text-slate-600 dark:text-slate-400">Eksplorasi Handoff</span>
+                        <span id="sidebar-progress-text" class="font-bold text-accent-600 dark:text-accent-400">12 / 124</span>
+                    </div>
+                    <div class="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                        <div id="sidebar-progress-bar" class="h-full bg-accent-600 rounded-full transition-all duration-500" style="width: 10%;"></div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5">Inspeksi atau salin komponen untuk mencatat progres sesi.</p>
+                </div>
+
+                <!-- Navigasi Cepat Bagian -->
+                <div>
+                    <p class="px-2.5 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">Studio Utama</p>
+                    <nav class="space-y-1 text-xs font-semibold">
+                        <a href="#sec-hero" class="flex items-center gap-2.5 px-3 py-2 dynamic-rounded bg-accent-500/12 text-accent-700 dark:text-accent-300">
+                            <i class="fa-solid fa-sparkles w-4 text-center"></i> Hero &amp; Customizer
+                        </a>
+                        <a href="#sec-playground" class="flex items-center gap-2.5 px-3 py-2 dynamic-rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                            <i class="fa-solid fa-sliders w-4 text-center text-cyan-500"></i> Interactive Playground
+                        </a>
+                        <a href="#sec-a11y" class="flex items-center gap-2.5 px-3 py-2 dynamic-rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                            <i class="fa-solid fa-eye w-4 text-center text-emerald-500"></i> Aksesibilitas &amp; Kontras
+                        </a>
+                        <a href="#sec-directory" class="flex items-center gap-2.5 px-3 py-2 dynamic-rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                            <i class="fa-solid fa-grid-2 w-4 text-center text-amber-500"></i> Direktori 124 Komponen
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- 6 Kategori Besar -->
+                <div>
+                    <p class="px-2.5 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">6 Kategori Modular</p>
+                    <div class="space-y-1 text-xs">
+                        <button type="button" data-cat="ALL" class="sidebar-cat-btn w-full flex items-center justify-between px-3 py-2 dynamic-rounded font-bold bg-accent-600 text-white transition">
+                            <span>Semua Komponen</span>
+                            <span class="font-mono text-[10px] opacity-90">124</span>
+                        </button>
+                        <button type="button" data-cat="Foundations" class="sidebar-cat-btn w-full flex items-center justify-between px-3 py-2 dynamic-rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                            <span>Foundations &amp; Tokens</span>
+                            <span class="font-mono text-[10px] text-slate-400">20</span>
+                        </button>
+                        <button type="button" data-cat="ActionsInputs" class="sidebar-cat-btn w-full flex items-center justify-between px-3 py-2 dynamic-rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                            <span>Actions &amp; Inputs</span>
+                            <span class="font-mono text-[10px] text-slate-400">24</span>
+                        </button>
+                        <button type="button" data-cat="Navigation" class="sidebar-cat-btn w-full flex items-center justify-between px-3 py-2 dynamic-rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                            <span>Navigation &amp; Layout</span>
+                            <span class="font-mono text-[10px] text-slate-400">20</span>
+                        </button>
+                        <button type="button" data-cat="DataFeedback" class="sidebar-cat-btn w-full flex items-center justify-between px-3 py-2 dynamic-rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                            <span>Data Display &amp; Feedback</span>
+                            <span class="font-mono text-[10px] text-slate-400">24</span>
+                        </button>
+                        <button type="button" data-cat="Overlays" class="sidebar-cat-btn w-full flex items-center justify-between px-3 py-2 dynamic-rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                            <span>Overlays &amp; Modals</span>
+                            <span class="font-mono text-[10px] text-slate-400">18</span>
+                        </button>
+                        <button type="button" data-cat="CommerceSaaS" class="sidebar-cat-btn w-full flex items-center justify-between px-3 py-2 dynamic-rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                            <span>Commerce &amp; SaaS Blocks</span>
+                            <span class="font-mono text-[10px] text-slate-400">18</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="p-3 dynamic-rounded bg-gradient-to-br from-accent-600/15 to-cyan-500/10 border border-accent-500/25 text-[11px]">
+                <p class="font-bold text-slate-900 dark:text-white">Figma Auto-Layout v5</p>
+                <p class="text-slate-600 dark:text-slate-400 mt-0.5">100% sinkron dengan variabel Tailwind CSS &amp; React JSX.</p>
+            </div>
+        </aside>
+
+        <!-- Main Scrollable Content -->
+        <main class="flex-1 min-w-0 px-4 lg:px-8 py-6 space-y-10">
+
+            <!-- =============================================================
+                 3. HERO SHOWCASE & LIVE COMPONENT BENTO + SURFACE CUSTOMIZER
+            ============================================================== -->
+            <section id="sec-hero" class="space-y-5">
+                <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+                    
+                    <!-- Left Hero Copy & Metrics (6 Kolom) -->
+                    <div class="xl:col-span-6 flex flex-col justify-between space-y-5">
+                        <div class="space-y-3.5">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-500/15 border border-accent-500/30 text-accent-700 dark:text-accent-300 text-xs font-mono font-semibold">
+                                <span class="w-2 h-2 rounded-full bg-accent-500 animate-ping"></span>
+                                <span>Sistem Desain Generasi Baru • 124 Komponen</span>
+                            </div>
+                            <h1 class="font-display text-3xl sm:text-4xl lg:text-[40px] font-extrabold tracking-tight leading-[1.15] text-slate-900 dark:text-white">
+                                Bangun Antarmuka Modern dengan <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-500 via-cyan-400 to-purple-500">Presisi &amp; Mikro-Interaksi</span>
+                            </h1>
+                            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                                Perpustakaan komponen modular siap produksi yang memadukan <strong>Figma Variables</strong>, <strong>Tailwind CSS</strong>, kontras aksesibilitas tinggi Siang/Malam, serta fisika animasi pegas yang ramah pengguna.
+                            </p>
+                        </div>
+
+                        <!-- Quick CTA & Stats -->
+                        <div class="space-y-4">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <a href="#sec-playground" class="btn-ripple px-5 py-2.5 dynamic-rounded bg-accent-600 hover:bg-accent-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-accent-600/30 transition active:scale-95 flex items-center gap-2">
+                                    <i class="fa-solid fa-play"></i>
+                                    <span>Coba Interactive Playground</span>
+                                </a>
+                                <a href="#sec-directory" class="px-5 py-2.5 dynamic-rounded bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 transition flex items-center gap-2">
+                                    <i class="fa-solid fa-layer-group text-accent-500"></i>
+                                    <span>Jelajahi 124 Komponen</span>
+                                </a>
+                            </div>
+
+                            <!-- 3 Stat Pills -->
+                            <div class="grid grid-cols-3 gap-3 pt-2">
+                                <div class="luminous-card p-3">
+                                    <p class="font-display text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">124+</p>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400">Komponen Modular</p>
+                                </div>
+                                <div class="luminous-card p-3">
+                                    <p class="font-display text-xl sm:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">AAA</p>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400">Kontras Siang/Malam</p>
+                                </div>
+                                <div class="luminous-card p-3">
+                                    <p class="font-display text-xl sm:text-2xl font-extrabold text-accent-600 dark:text-accent-400">3-in-1</p>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400">HTML, JSX &amp; Figma</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Interactive Component Bento Showcase (6 Kolom) -->
+                    <div class="xl:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        
+                        <!-- Bento 1: 3D Tilt-on-Hover Interactive Card -->
+                        <div class="tilt-wrapper">
+                            <div id="hero-tilt-card" class="tilt-card luminous-card p-5 h-full flex flex-col justify-between cursor-pointer select-none">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-accent-500/15 text-accent-700 dark:text-accent-300 border border-accent-500/30">
+                                        3D TILT INTERAKTIF
+                                    </span>
+                                    <i class="fa-solid fa-cube text-accent-500 text-lg"></i>
+                                </div>
+                                <div class="my-4">
+                                    <h3 class="font-display font-bold text-base text-slate-900 dark:text-white">Kartu Perspektif 3D</h3>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">Gerakkan kursor di atas kartu ini untuk merasakan efek elevasi &amp; pantulan cahaya dinamis.</p>
+                                </div>
+                                <div class="flex items-center justify-between pt-3 border-t border-slate-200/70 dark:border-slate-800 text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                                    <span>perspective: 1000px</span>
+                                    <span class="text-emerald-500 font-bold">60 FPS GPU</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bento 2: Spring Physics Toggle & Magnetic Ripple Action -->
+                        <div class="luminous-card p-5 flex flex-col justify-between gap-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400">Mikro-Interaksi</span>
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-2.5 dynamic-rounded bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800">
+                                    <span class="text-xs font-semibold">Spring Toggle Switch</span>
+                                    <button type="button" role="switch" aria-checked="true" class="spring-switch w-11 h-6 rounded-full bg-accent-600 p-0.5 flex items-center">
+                                        <span class="spring-thumb w-5 h-5 rounded-full bg-white shadow transform translate-x-5"></span>
+                                    </button>
+                                </div>
+
+                                <button type="button" class="btn-ripple w-full py-2.5 px-4 dynamic-rounded bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-500 hover:to-accent-600 text-white text-xs font-bold shadow-md transition active:scale-95 flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                    <span>Klik Efek Ripple Gelombang</span>
+                                </button>
+                            </div>
+
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">cubic-bezier(0.34, 1.56, 0.64, 1)</p>
+                        </div>
+
+                        <!-- Bento 3: Live Typography & Color Token Preview (Span 2 cols) -->
+                        <div class="sm:col-span-2 luminous-card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-mono uppercase tracking-wider text-accent-600 dark:text-accent-400 font-bold">Sistem Token Terpadu</span>
+                                <h3 class="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white">Plus Jakarta Sans + Inter + JetBrains Mono</h3>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Keterbacaan tajam di layar Retina maupun perangkat mobile.</p>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <span class="w-7 h-7 dynamic-rounded bg-accent-400 shadow-sm" title="accent-400"></span>
+                                <span class="w-7 h-7 dynamic-rounded bg-accent-500 shadow-sm" title="accent-500"></span>
+                                <span class="w-7 h-7 dynamic-rounded bg-accent-600 shadow-sm" title="accent-600"></span>
+                                <span class="w-7 h-7 dynamic-rounded bg-emerald-500 shadow-sm" title="emerald-500"></span>
+                                <span class="w-7 h-7 dynamic-rounded bg-amber-500 shadow-sm" title="amber-500"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     THEME & SURFACE CUSTOMIZER BAR (REAL-TIME)
+                ========================================================== -->
+                <div class="luminous-card p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 dynamic-rounded bg-accent-500/15 text-accent-600 dark:text-accent-400 flex items-center justify-center">
+                            <i class="fa-solid fa-palette text-sm"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-white">Theme &amp; Surface Customizer</h2>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Ubah warna aksen, kelengkungan sudut (radius), &amp; kecepatan animasi seluruh 124 komponen secara instan</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+                        <!-- 1. Accent Colors (6 Swatches) -->
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400">Aksen:</span>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" data-accent="indigo" title="Indigo" class="accent-swatch w-5 h-5 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-indigo-500 dark:ring-offset-slate-900 transition-transform hover:scale-110"></button>
+                                <button type="button" data-accent="emerald" title="Emerald" class="accent-swatch w-5 h-5 rounded-full bg-emerald-500 opacity-75 hover:opacity-100 transition-transform hover:scale-110"></button>
+                                <button type="button" data-accent="rose" title="Rose" class="accent-swatch w-5 h-5 rounded-full bg-rose-500 opacity-75 hover:opacity-100 transition-transform hover:scale-110"></button>
+                                <button type="button" data-accent="amber" title="Amber" class="accent-swatch w-5 h-5 rounded-full bg-amber-500 opacity-75 hover:opacity-100 transition-transform hover:scale-110"></button>
+                                <button type="button" data-accent="cyan" title="Cyan" class="accent-swatch w-5 h-5 rounded-full bg-cyan-500 opacity-75 hover:opacity-100 transition-transform hover:scale-110"></button>
+                                <button type="button" data-accent="violet" title="Violet" class="accent-swatch w-5 h-5 rounded-full bg-violet-500 opacity-75 hover:opacity-100 transition-transform hover:scale-110"></button>
+                            </div>
+                        </div>
+
+                        <!-- 2. Border Radius Preset -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400">Radius:</span>
+                            <div class="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] font-mono">
+                                <button type="button" data-radius="4px" data-radius-lg="8px" class="radius-preset-btn px-2 py-1 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">Sharp 4px</button>
+                                <button type="button" data-radius="12px" data-radius-lg="18px" class="radius-preset-btn px-2 py-1 rounded-lg font-bold bg-accent-600 text-white shadow-sm transition">Modern 12px</button>
+                                <button type="button" data-radius="20px" data-radius-lg="26px" class="radius-preset-btn px-2 py-1 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">Pill 20px</button>
+                            </div>
+                        </div>
+
+                        <!-- 3. Motion Physics Speed -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400">Gerak:</span>
+                            <div class="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] font-mono">
+                                <button type="button" data-motion="snappy" class="motion-preset-btn px-2 py-1 rounded-lg text-slate-600 dark:text-slate-400 transition">Snappy</button>
+                                <button type="button" data-motion="spring" class="motion-preset-btn px-2 py-1 rounded-lg font-bold bg-accent-600 text-white shadow-sm transition">Bouncy Spring</button>
+                                <button type="button" data-motion="smooth" class="motion-preset-btn px-2 py-1 rounded-lg text-slate-600 dark:text-slate-400 transition">Smooth</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =============================================================
+                 4. INTERACTIVE COMPONENT PLAYGROUND (LIVE STUDIO)
+            ============================================================== -->
+            <section id="sec-playground" class="space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h2 class="font-display text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
+                            <span class="w-2.5 h-6 rounded-full bg-cyan-500"></span>
+                            Interactive Component Playground
+                        </h2>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">Pilih komponen, sesuaikan varian, ukuran, dan statusnya, lalu salin kode hasil kustomisasi dalam satu klik.</p>
+                    </div>
+                </div>
+
+                <div class="luminous-card overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+                    
+                    <!-- Left Controls Panel (4 Kolom) -->
+                    <div class="lg:col-span-4 p-5 border-b lg:border-b-0 lg:border-r border-slate-200/80 dark:border-slate-800/80 space-y-4 bg-slate-50/60 dark:bg-slate-900/40">
+                        <!-- Pilih Komponen -->
+                        <div>
+                            <label for="pg-component-select" class="block text-[11px] font-mono font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">1. Pilih Komponen</label>
+                            <select id="pg-component-select" class="w-full dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white focus:border-accent-500">
+                                <option value="button">Action Button (Tombol Interaktif)</option>
+                                <option value="pricing">SaaS Pricing Card (Kartu Paket)</option>
+                                <option value="input">Smart Input Field (Kolom Formulir)</option>
+                                <option value="toast">Alert Banner / Toast (Notifikasi)</option>
+                                <option value="toggle">Spring Switch Card (Sakelar Pengaturan)</option>
+                                <option value="profile">User Profile Badge (Kartu Identitas)</option>
+                            </select>
+                        </div>
+
+                        <!-- Pilih Varian -->
+                        <div>
+                            <span class="block text-[11px] font-mono font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">2. Varian Gaya</span>
+                            <div class="grid grid-cols-2 gap-1.5 font-mono text-xs">
+                                <button type="button" data-pg-variant="primary" class="pg-variant-btn py-1.5 px-2.5 dynamic-rounded font-bold bg-accent-600 text-white shadow-sm transition">Primary</button>
+                                <button type="button" data-pg-variant="glass" class="pg-variant-btn py-1.5 px-2.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition">Glass</button>
+                                <button type="button" data-pg-variant="outline" class="pg-variant-btn py-1.5 px-2.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition">Outline</button>
+                                <button type="button" data-pg-variant="soft" class="pg-variant-btn py-1.5 px-2.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition">Soft Tint</button>
+                            </div>
+                        </div>
+
+                        <!-- Pilih Ukuran -->
+                        <div>
+                            <span class="block text-[11px] font-mono font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">3. Ukuran (Scale)</span>
+                            <div class="grid grid-cols-3 gap-1.5 font-mono text-xs">
+                                <button type="button" data-pg-size="sm" class="pg-size-btn py-1.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition">SM</button>
+                                <button type="button" data-pg-size="md" class="pg-size-btn py-1.5 dynamic-rounded font-bold bg-accent-600 text-white shadow-sm transition">MD</button>
+                                <button type="button" data-pg-size="lg" class="pg-size-btn py-1.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition">LG</button>
+                            </div>
+                        </div>
+
+                        <!-- Pilih Status -->
+                        <div>
+                            <span class="block text-[11px] font-mono font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">4. Status Interaksi</span>
+                            <div class="grid grid-cols-2 gap-1.5 font-mono text-xs">
+                                <button type="button" data-pg-state="default" class="pg-state-btn py-1.5 px-2.5 dynamic-rounded font-bold bg-accent-600 text-white shadow-sm transition">Default</button>
+                                <button type="button" data-pg-state="loading" class="pg-state-btn py-1.5 px-2.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition">Loading</button>
+                                <button type="button" data-pg-state="success" class="pg-state-btn py-1.5 px-2.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition">Success</button>
+                                <button type="button" data-pg-state="disabled" class="pg-state-btn py-1.5 px-2.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition">Disabled</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Live Canvas & Generated Code (8 Kolom) -->
+                    <div class="lg:col-span-8 flex flex-col justify-between">
+                        <!-- Stage Preview -->
+                        <div class="p-8 min-h-[230px] flex flex-col items-center justify-center relative dot-grid-pattern">
+                            <span class="absolute top-3 left-4 text-[10px] font-mono uppercase tracking-wider text-slate-400">Live Interactive Stage</span>
+                            <div id="pg-stage-canvas" class="w-full flex items-center justify-center">
+                                <!-- Diisi secara dinamis oleh JS -->
+                            </div>
+                        </div>
+
+                        <!-- Generated Code Output -->
+                        <div class="p-4 bg-slate-950 text-slate-200 border-t border-slate-800">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[11px] font-mono text-slate-400">Generated HTML + Tailwind CSS</span>
+                                <button id="btn-copy-pg-code" type="button" class="px-3 py-1 dynamic-rounded bg-accent-600 hover:bg-accent-500 text-white text-xs font-bold transition flex items-center gap-1.5">
+                                    <i class="fa-regular fa-copy"></i>
+                                    <span>Salin Kode Playground</span>
+                                </button>
+                            </div>
+                            <pre id="pg-code-output" class="font-mono text-xs text-emerald-300 overflow-x-auto leading-relaxed select-all"></pre>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- =============================================================
+                 5. AKSESIBILITAS SIANG/MALAM & LIVE WCAG CONTRAST CHECKER
+            ============================================================== -->
+            <section id="sec-a11y" class="space-y-4">
+                <div>
+                    <h2 class="font-display text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
+                        <span class="w-2.5 h-6 rounded-full bg-emerald-500"></span>
+                        Aksesibilitas Kontras Tinggi &amp; Simulasi Penglihatan
+                    </h2>
+                    <p class="text-xs text-slate-600 dark:text-slate-400">Uji rasio keterbacaan WCAG 2.2 AA/AAA secara langsung dan simulasikan mode penglihatan Deuteranopia maupun kontras ekstra tinggi.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <!-- Contrast Checker (7 Kolom) -->
+                    <div class="lg:col-span-7 luminous-card p-5 space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400">Penguji Rasio Kontras Real-Time</span>
+                            <span id="checker-wcag-badge" class="px-2.5 py-1 dynamic-rounded text-xs font-mono font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                                LULUS AAA (15.2:1)
+                            </span>
+                        </div>
+
+                        <div id="contrast-preview-box" class="p-5 dynamic-rounded border border-slate-300/40 transition-colors" style="background-color: #0d1322; color: #f8fafc;">
+                            <p class="font-display text-base font-bold">Keterbacaan Optimal di Kondisi Siang Terik maupun Malam Gelap</p>
+                            <p class="text-xs opacity-90 mt-1.5 leading-relaxed">
+                                AetherUI menjamin rasio kontras teks utama di atas 7.0:1 (WCAG AAA) sehingga meminimalkan kelelahan mata pengguna saat bekerja dalam durasi panjang.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+                            <label class="flex items-center justify-between p-3 dynamic-rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer">
+                                <div>
+                                    <span class="block text-[10px] text-slate-500 dark:text-slate-400">Warna Teks (Foreground)</span>
+                                    <strong id="fg-hex-label">#F8FAFC</strong>
+                                </div>
+                                <input id="picker-fg" type="color" value="#f8fafc" class="w-8 h-8 rounded cursor-pointer bg-transparent border-0">
+                            </label>
+                            <label class="flex items-center justify-between p-3 dynamic-rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer">
+                                <div>
+                                    <span class="block text-[10px] text-slate-500 dark:text-slate-400">Warna Latar (Background)</span>
+                                    <strong id="bg-hex-label">#0D1322</strong>
+                                </div>
+                                <input id="picker-bg" type="color" value="#0d1322" class="w-8 h-8 rounded cursor-pointer bg-transparent border-0">
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Vision Mode Simulator (5 Kolom) -->
+                    <div class="lg:col-span-5 luminous-card p-5 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400 mb-3">Simulator Mode Penglihatan (A11y Audit)</h3>
+                            <div class="space-y-2.5">
+                                <button type="button" data-vision="normal" class="vision-sim-btn w-full text-left p-3 dynamic-rounded border-2 border-accent-500 bg-accent-500/10 flex items-center justify-between transition">
+                                    <div>
+                                        <p class="text-xs font-bold text-slate-900 dark:text-white">Penglihatan Standar (Default)</p>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Spektrum warna penuh sRGB / Display P3</p>
+                                    </div>
+                                    <i class="fa-solid fa-circle-check text-accent-500"></i>
+                                </button>
+
+                                <button type="button" data-vision="deuteranopia" class="vision-sim-btn w-full text-left p-3 dynamic-rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/70 hover:border-accent-400 flex items-center justify-between transition">
+                                    <div>
+                                        <p class="text-xs font-bold text-slate-900 dark:text-white">Simulasi Deuteranopia (Buta Warna Hijau-Merah)</p>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Menguji kejelasan ikon &amp; label status non-warna</p>
+                                    </div>
+                                    <i class="fa-regular fa-circle text-slate-400"></i>
+                                </button>
+
+                                <button type="button" data-vision="high-contrast" class="vision-sim-btn w-full text-left p-3 dynamic-rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/70 hover:border-accent-400 flex items-center justify-between transition">
+                                    <div>
+                                        <p class="text-xs font-bold text-slate-900 dark:text-white">Mode Kontras Ultra Tinggi</p>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Meningkatkan ketajaman batas &amp; legibilitas</p>
+                                    </div>
+                                    <i class="fa-regular fa-circle text-slate-400"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                            <span>Navigasi Keyboard: <strong class="text-emerald-500">Tab / Esc Aktif</strong></span>
+                            <span>ARIA Landmarks: <strong class="text-emerald-500">100%</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =============================================================
+                 6. KATALOG LENGKAP 124 KOMPONEN DENGAN MINI-PREVIEW VISUAL
+            ============================================================== -->
+            <section id="sec-directory" class="space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div>
+                        <div class="flex items-center gap-2.5">
+                            <h2 class="font-display text-xl font-extrabold text-slate-900 dark:text-white">Katalog Lengkap 124 Komponen Modular</h2>
+                            <span id="directory-count-badge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-accent-500/15 text-accent-700 dark:text-accent-300 border border-accent-500/30">
+                                124 Komponen
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">Setiap kartu dilengkapi mini-preview interaktif, lencana standar aksesibilitas, tombol salin cepat, dan modal handoff multi-format.</p>
+                    </div>
+
+                    <!-- Mobile Search Bar -->
+                    <div class="md:hidden relative w-full">
+                        <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input id="mobile-search-input" type="text" placeholder="Cari dari 124 komponen..." class="w-full dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 pl-8 pr-3 py-2 text-xs">
+                    </div>
+                </div>
+
+                <!-- Sliding-Pill Category Filter Tabs -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1" role="tablist" aria-label="Filter Kategori Katalog">
+                    <button type="button" data-cat="ALL" class="cat-pill-btn px-3.5 py-1.5 dynamic-rounded text-xs font-bold bg-accent-600 text-white shadow-sm shrink-0 transition">Semua (124)</button>
+                    <button type="button" data-cat="Foundations" class="cat-pill-btn px-3.5 py-1.5 dynamic-rounded text-xs font-semibold bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-accent-400 shrink-0 transition">Foundations &amp; Tokens (20)</button>
+                    <button type="button" data-cat="ActionsInputs" class="cat-pill-btn px-3.5 py-1.5 dynamic-rounded text-xs font-semibold bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-accent-400 shrink-0 transition">Actions &amp; Inputs (24)</button>
+                    <button type="button" data-cat="Navigation" class="cat-pill-btn px-3.5 py-1.5 dynamic-rounded text-xs font-semibold bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-accent-400 shrink-0 transition">Navigation &amp; Layout (20)</button>
+                    <button type="button" data-cat="DataFeedback" class="cat-pill-btn px-3.5 py-1.5 dynamic-rounded text-xs font-semibold bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-accent-400 shrink-0 transition">Data Display &amp; Feedback (24)</button>
+                    <button type="button" data-cat="Overlays" class="cat-pill-btn px-3.5 py-1.5 dynamic-rounded text-xs font-semibold bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-accent-400 shrink-0 transition">Overlays &amp; Modals (18)</button>
+                    <button type="button" data-cat="CommerceSaaS" class="cat-pill-btn px-3.5 py-1.5 dynamic-rounded text-xs font-semibold bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-accent-400 shrink-0 transition">Commerce &amp; SaaS Blocks (18)</button>
+                </div>
+
+                <!-- Grid 124 Komponen dengan Mini-Preview Visual -->
+                <div id="components-directory-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <!-- Diisi secara dinamis oleh JavaScript -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- =====================================================================
+         7. DEVELOPER HANDOFF MODAL (TAILWIND HTML, REACT JSX & FIGMA JSON)
+    ====================================================================== -->
+    <div id="handoff-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-[#0d1322] border border-slate-200 dark:border-slate-800 rounded-2xl max-w-3xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="px-5 py-4 bg-slate-50 dark:bg-[#070b14] border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 dynamic-rounded bg-accent-600 text-white flex items-center justify-center">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <div>
+                        <h3 id="handoff-modal-title" class="font-display text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">Developer &amp; Figma Handoff Studio</h3>
+                        <p id="handoff-modal-subtitle" class="text-xs font-mono text-slate-500 dark:text-slate-400">Tailwind CSS • React JSX • Figma Design Tokens</p>
+                    </div>
+                </div>
+                <button id="btn-close-handoff" type="button" aria-label="Tutup Modal" class="w-8 h-8 dynamic-rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-600 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-5 overflow-y-auto space-y-4">
+                <!-- Spec Metadata Pills -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
+                    <div class="p-2.5 dynamic-rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        <span class="text-[10px] text-slate-500 block">FIGMA NODE</span>
+                        <strong id="spec-figma-name" class="text-slate-900 dark:text-white truncate block">Component/Node</strong>
+                    </div>
+                    <div class="p-2.5 dynamic-rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        <span class="text-[10px] text-slate-500 block">RADIUS TOKEN</span>
+                        <strong id="spec-radius-val" class="text-accent-600 dark:text-accent-400">12px</strong>
+                    </div>
+                    <div class="p-2.5 dynamic-rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        <span class="text-[10px] text-slate-500 block">PHYSICS CURVE</span>
+                        <strong id="spec-motion-val" class="text-emerald-600 dark:text-emerald-400">Bouncy Spring</strong>
+                    </div>
+                    <div class="p-2.5 dynamic-rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                        <span class="text-[10px] text-slate-500 block">A11Y CONTRAST</span>
+                        <strong id="spec-wcag-val" class="text-emerald-600 dark:text-emerald-400">AAA 14.8:1</strong>
+                    </div>
+                </div>
+
+                <!-- Format Tabs: Tailwind HTML | React JSX | Figma JSON -->
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="inline-flex p-1 dynamic-rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono">
+                        <button type="button" data-handoff-tab="html" class="handoff-tab-btn px-3 py-1.5 dynamic-rounded font-bold bg-accent-600 text-white transition">HTML + Tailwind</button>
+                        <button type="button" data-handoff-tab="react" class="handoff-tab-btn px-3 py-1.5 dynamic-rounded text-slate-600 dark:text-slate-400 transition">React JSX</button>
+                        <button type="button" data-handoff-tab="figma" class="handoff-tab-btn px-3 py-1.5 dynamic-rounded text-slate-600 dark:text-slate-400 transition">Figma Tokens JSON</button>
+                    </div>
+
+                    <button id="btn-copy-handoff-code" type="button" class="btn-ripple px-3.5 py-1.5 dynamic-rounded bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow transition flex items-center gap-1.5">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Salin Kode</span>
+                    </button>
+                </div>
+
+                <!-- Syntax Highlighted Code Container -->
+                <pre id="handoff-code-content" class="p-4 dynamic-rounded bg-slate-950 text-emerald-300 font-mono text-xs overflow-x-auto leading-relaxed select-all border border-slate-800"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         JAVASCRIPT LOGIC
+    ====================================================================== -->
+    <script>
+        (function () {
+            'use strict';
+
+            // =================================================================
+            // 1. STATE & THEME TOKENS
+            // =================================================================
+            const accentPalettes = {
+                indigo:  { 50:'238 242 255', 100:'224 231 255', 200:'199 210 254', 300:'165 180 252', 400:'129 140 248', 500:'99 102 241', 600:'79 70 229', 700:'67 56 202', 800:'55 48 163', 900:'49 46 129', hex:'#4f46e5' },
+                emerald: { 50:'236 253 245', 100:'209 250 229', 200:'167 243 208', 300:'110 231 183', 400:'52 211 153', 500:'16 185 129', 600:'5 150 105', 700:'4 120 87', 800:'6 95 70', 900:'6 78 59', hex:'#059669' },
+                rose:    { 50:'255 241 242', 100:'255 228 230', 200:'254 205 211', 300:'253 164 175', 400:'251 113 133', 500:'244 63 94', 600:'225 29 72', 700:'190 18 60', 800:'159 18 57', 900:'136 19 55', hex:'#e11d48' },
+                amber:   { 50:'255 251 235', 100:'254 243 199', 200:'253 230 138', 300:'252 211 77', 400:'251 191 36', 500:'245 158 11', 600:'217 119 6', 700:'180 83 9', 800:'146 64 14', 900:'120 53 15', hex:'#d97706' },
+                cyan:    { 50:'236 254 255', 100:'207 250 254', 200:'165 243 252', 300:'103 232 249', 400:'34 211 238', 500:'6 182 212', 600:'8 145 178', 700:'14 116 144', 800:'21 94 117', 900:'22 78 99', hex:'#0891b2' },
+                violet:  { 50:'245 243 255', 100:'237 233 254', 200:'221 214 254', 300:'196 181 253', 400:'167 139 250', 500:'139 92 246', 600:'124 58 237', 700:'109 40 217', 800:'91 33 182', 900:'76 29 149', hex:'#7c3aed' }
+            };
+
+            const state = {
+                accent: 'indigo',
+                radius: '12px',
+                motion: 'Bouncy Spring',
+                selectedCategory: 'ALL',
+                searchQuery: '',
+                exploredSet: new Set(['AUI-001', 'AUI-021', 'AUI-045', 'AUI-065', 'AUI-089', 'AUI-107', 'AUI-002', 'AUI-022', 'AUI-046', 'AUI-066', 'AUI-090', 'AUI-108']),
+                // Playground State
+                pgComponent: 'button',
+                pgVariant: 'primary',
+                pgSize: 'md',
+                pgState: 'default',
+                // Active Handoff Modal Payloads
+                activeHandoff: {
+                    html: '',
+                    react: '',
+                    figma: ''
+                }
+            };
+
+            function recordExploration(id) {
+                state.exploredSet.add(id);
+                const count = Math.min(124, state.exploredSet.size);
+                const pct = Math.round((count / 124) * 100);
+                document.getElementById('sidebar-progress-text').textContent = `${count} / 124`;
+                document.getElementById('sidebar-progress-bar').style.width = `${pct}%`;
+            }
+
+            // =================================================================
+            // 2. THEME, RADIUS & MOTION CUSTOMIZER CONTROLS
+            // =================================================================
+            function applyAccent(name) {
+                const pal = accentPalettes[name];
+                if (!pal) return;
+                state.accent = name;
+                const root = document.documentElement;
+                Object.keys(pal).forEach(k => {
+                    if (k !== 'hex') root.style.setProperty(`--accent-${k}`, pal[k]);
+                });
+
+                document.querySelectorAll('.accent-swatch').forEach(btn => {
+                    const active = btn.getAttribute('data-accent') === name;
+                    btn.classList.toggle('ring-2', active);
+                    btn.classList.toggle('ring-offset-2', active);
+                    btn.classList.toggle('opacity-100', active);
+                    btn.classList.toggle('opacity-70', !active);
+                });
+                renderPlayground();
+            }
+
+            document.querySelectorAll('.accent-swatch').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const acc = btn.getAttribute('data-accent');
+                    applyAccent(acc);
+                    showToast('Warna Aksen Diperbarui', `Palet ${acc.toUpperCase()} diterapkan ke seluruh studio.`, 'info');
+                });
+            });
+
+            // Border Radius Preset Buttons
+            document.querySelectorAll('.radius-preset-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.radius-preset-btn').forEach(b => {
+                        b.className = 'radius-preset-btn px-2 py-1 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
+                    });
+                    btn.className = 'radius-preset-btn px-2 py-1 rounded-lg font-bold bg-accent-600 text-white shadow-sm transition';
+                    const r = btn.getAttribute('data-radius');
+                    const rLg = btn.getAttribute('data-radius-lg');
+                    state.radius = r;
+                    document.documentElement.style.setProperty('--ui-radius', r);
+                    document.documentElement.style.setProperty('--ui-radius-lg', rLg);
+                    showToast('Radius Sudut Diperbarui', `Token kelengkungan sudut diubah ke ${r}.`, 'info');
+                });
+            });
+
+            // Motion Physics Preset Buttons
+            document.querySelectorAll('.motion-preset-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.motion-preset-btn').forEach(b => {
+                        b.className = 'motion-preset-btn px-2 py-1 rounded-lg text-slate-600 dark:text-slate-400 transition';
+                    });
+                    btn.className = 'motion-preset-btn px-2 py-1 rounded-lg font-bold bg-accent-600 text-white shadow-sm transition';
+                    const m = btn.getAttribute('data-motion');
+                    if (m === 'snappy') {
+                        state.motion = 'Snappy (160ms)';
+                        document.documentElement.style.setProperty('--motion-duration', '0.16s');
+                        document.documentElement.style.setProperty('--motion-curve', 'cubic-bezier(0.2, 0, 0, 1)');
+                    } else if (m === 'spring') {
+                        state.motion = 'Bouncy Spring';
+                        document.documentElement.style.setProperty('--motion-duration', '0.38s');
+                        document.documentElement.style.setProperty('--motion-curve', 'cubic-bezier(0.34, 1.56, 0.64, 1)');
+                    } else {
+                        state.motion = 'Smooth Ease';
+                        document.documentElement.style.setProperty('--motion-duration', '0.45s');
+                        document.documentElement.style.setProperty('--motion-curve', 'cubic-bezier(0.22, 1, 0.36, 1)');
+                    }
+                    showToast('Kurva Animasi Diubah', `Fisika mikro-interaksi disetel ke ${state.motion}.`, 'info');
+                });
+            });
+
+            // Day / Night Mode Toggle
+            document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-moon text-accent-500' : 'fa-solid fa-sun text-amber-500';
+                document.getElementById('theme-label').textContent = isDark ? 'Mode Malam' : 'Mode Siang';
+                document.getElementById('wcag-header-ratio').textContent = isDark ? '15.2:1' : '16.1:1';
+
+                const fg = isDark ? '#f8fafc' : '#090d16';
+                const bg = isDark ? '#0d1322' : '#ffffff';
+                document.getElementById('picker-fg').value = fg;
+                document.getElementById('picker-bg').value = bg;
+                updateContrastChecker();
+            });
+
+            // Collapsible Sidebar Toggle
+            document.getElementById('btn-toggle-sidebar').addEventListener('click', () => {
+                const sb = document.getElementById('studio-sidebar');
+                if (window.innerWidth >= 1024) {
+                    sb.classList.toggle('lg:flex');
+                } else {
+                    sb.classList.toggle('hidden');
+                    sb.classList.toggle('fixed');
+                    sb.classList.toggle('inset-y-14');
+                    sb.classList.toggle('left-0');
+                    sb.classList.toggle('z-40');
+                    sb.classList.toggle('flex');
+                }
+            });
+
+            // =================================================================
+            // 3. INTERACTIVE COMPONENT PLAYGROUND
+            // =================================================================
+            function renderPlayground() {
+                const stage = document.getElementById('pg-stage-canvas');
+                const codeOut = document.getElementById('pg-code-output');
+                const comp = state.pgComponent;
+                const variant = state.pgVariant;
+                const size = state.pgSize;
+                const st = state.pgState;
+
+                const sizeMap = {
+                    sm: { pad: 'px-3 py-1.5 text-xs', cardW: 'max-w-xs p-3.5 text-xs' },
+                    md: { pad: 'px-4 py-2.5 text-xs sm:text-sm', cardW: 'max-w-sm p-5 text-sm' },
+                    lg: { pad: 'px-6 py-3 text-sm sm:text-base', cardW: 'max-w-md p-6 text-base' }
+                };
+
+                const variantStyles = {
+                    primary: 'bg-accent-600 hover:bg-accent-700 text-white shadow-lg shadow-accent-600/25 border border-transparent',
+                    glass: 'bg-white/70 dark:bg-slate-900/70 backdrop-blur-md text-slate-900 dark:text-white border border-accent-500/40 shadow-md',
+                    outline: 'bg-transparent hover:bg-accent-500/10 text-accent-700 dark:text-accent-300 border-2 border-accent-500',
+                    soft: 'bg-accent-500/15 hover:bg-accent-500/25 text-accent-800 dark:text-accent-200 border border-accent-500/25'
+                };
+
+                const disabledAttr = st === 'disabled' ? 'disabled opacity-50 cursor-not-allowed pointer-events-none' : '';
+                let htmlMarkup = '';
+
+                if (comp === 'button') {
+                    const iconHtml = st === 'loading'
+                        ? '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Memproses...'
+                        : st === 'success'
+                        ? '<i class="fa-solid fa-circle-check mr-2 text-emerald-300"></i>Tersimpan!'
+                        : '<i class="fa-solid fa-rocket mr-2"></i>Publikasikan Desain';
+
+                    htmlMarkup = `<button type="button" class="btn-ripple dynamic-rounded font-bold transition active:scale-95 ${sizeMap[size].pad} ${variantStyles[variant]} ${disabledAttr}">\n  ${iconHtml}\n</button>`;
+                } else if (comp === 'pricing') {
+                    const badge = st === 'loading' ? 'Memuat Paket...' : st === 'success' ? 'Paket Aktif ✓' : 'PALING POPULER';
+                    htmlMarkup = `<div class="w-full dynamic-rounded ${sizeMap[size].cardW} ${variantStyles[variant]} ${disabledAttr} space-y-3">\n  <div class="flex items-center justify-between">\n    <span class="font-display font-extrabold">AetherUI Pro Studio</span>\n    <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-black/15 dark:bg-white/15">${badge}</span>\n  </div>\n  <p class="font-display text-2xl font-extrabold">Rp 299rb<span class="text-xs font-normal opacity-80">/bulan</span></p>\n  <p class="text-xs opacity-90">Akses penuh 124+ komponen Figma &amp; Tailwind CSS v4.</p>\n</div>`;
+                } else if (comp === 'input') {
+                    const statusHint = st === 'loading'
+                        ? '<span class="text-[11px] font-mono text-amber-400 mt-1 block"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Memeriksa ketersediaan username...</span>'
+                        : st === 'success'
+                        ? '<span class="text-[11px] font-mono text-emerald-400 mt-1 block"><i class="fa-solid fa-check mr-1"></i>Username tersedia!</span>'
+                        : '<span class="text-[11px] font-mono opacity-75 mt-1 block">Gunakan huruf kecil &amp; angka</span>';
+                    htmlMarkup = `<div class="w-full max-w-sm ${disabledAttr}">\n  <label class="block text-xs font-bold mb-1">Workspace Handle</label>\n  <input type="text" value="aether-studio" class="w-full dynamic-rounded ${sizeMap[size].pad} ${variantStyles[variant]} focus:outline-none" />\n  ${statusHint}\n</div>`;
+                } else if (comp === 'toast') {
+                    const icon = st === 'loading' ? 'fa-spinner fa-spin' : st === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-bell';
+                    htmlMarkup = `<div role="alert" class="w-full dynamic-rounded ${sizeMap[size].cardW} ${variantStyles[variant]} ${disabledAttr} flex items-center gap-3">\n  <i class="fa-solid ${icon} text-lg"></i>\n  <div>\n    <p class="font-bold text-xs">Sinkronisasi Token Berhasil</p>\n    <p class="text-[11px] opacity-85">124 variabel Figma telah diperbarui.</p>\n  </div>\n</div>`;
+                } else if (comp === 'toggle') {
+                    const isOn = st !== 'disabled';
+                    htmlMarkup = `<div class="w-full max-w-sm dynamic-rounded ${sizeMap[size].pad} ${variantStyles[variant]} ${disabledAttr} flex items-center justify-between gap-4">\n  <span class="font-semibold text-xs">Sinkronisasi Otomatis Mode Gelap</span>\n  <button type="button" role="switch" aria-checked="${isOn}" class="spring-switch w-11 h-6 rounded-full bg-black/25 p-0.5 flex items-center">\n    <span class="spring-thumb w-5 h-5 rounded-full bg-white shadow transform ${isOn ? 'translate-x-5' : ''}"></span>\n  </button>\n</div>`;
+                } else if (comp === 'profile') {
+                    const statusDot = st === 'success' ? 'bg-emerald-400' : st === 'loading' ? 'bg-amber-400 animate-ping' : 'bg-cyan-400';
+                    htmlMarkup = `<div class="dynamic-rounded ${sizeMap[size].pad} ${variantStyles[variant]} ${disabledAttr} inline-flex items-center gap-3">\n  <div class="relative">\n    <div class="w-10 h-10 rounded-full bg-black/20 flex items-center justify-center font-bold">RP</div>\n    <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full ring-2 ring-white ${statusDot}"></span>\n  </div>\n  <div>\n    <p class="font-bold text-xs">Raka Pratama</p>\n    <p class="text-[11px] opacity-85 font-mono">Principal Design Technologist</p>\n  </div>\n</div>`;
+                }
+
+                stage.innerHTML = htmlMarkup;
+                codeOut.textContent = htmlMarkup;
+            }
+
+            document.getElementById('pg-component-select').addEventListener('change', (e) => {
+                state.pgComponent = e.target.value;
+                renderPlayground();
+            });
+
+            document.querySelectorAll('.pg-variant-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.pg-variant-btn').forEach(b => {
+                        b.className = 'pg-variant-btn py-1.5 px-2.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition';
+                    });
+                    btn.className = 'pg-variant-btn py-1.5 px-2.5 dynamic-rounded font-bold bg-accent-600 text-white shadow-sm transition';
+                    state.pgVariant = btn.getAttribute('data-pg-variant');
+                    renderPlayground();
+                });
+            });
+
+            document.querySelectorAll('.pg-size-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.pg-size-btn').forEach(b => {
+                        b.className = 'pg-size-btn py-1.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition';
+                    });
+                    btn.className = 'pg-size-btn py-1.5 dynamic-rounded font-bold bg-accent-600 text-white shadow-sm transition';
+                    state.pgSize = btn.getAttribute('data-pg-size');
+                    renderPlayground();
+                });
+            });
+
+            document.querySelectorAll('.pg-state-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.pg-state-btn').forEach(b => {
+                        b.className = 'pg-state-btn py-1.5 px-2.5 dynamic-rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition';
+                    });
+                    btn.className = 'pg-state-btn py-1.5 px-2.5 dynamic-rounded font-bold bg-accent-600 text-white shadow-sm transition';
+                    state.pgState = btn.getAttribute('data-pg-state');
+                    renderPlayground();
+                });
+            });
+
+            document.getElementById('btn-copy-pg-code').addEventListener('click', () => {
+                copyTextSafe(document.getElementById('pg-code-output').textContent);
+                showToast('Kode Playground Disalin', 'Markup HTML & Tailwind CSS siap ditempel ke proyek Anda.', 'success');
+            });
+
+            // =================================================================
+            // 4. WCAG CONTRAST CHECKER & VISION SIMULATOR
+            // =================================================================
+            function hexToRgb(hex) {
+                const clean = hex.replace('#', '');
+                const bigint = parseInt(clean, 16);
+                return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+            }
+
+            function luminance(r, g, b) {
+                const a = [r, g, b].map(v => {
+                    v /= 255;
+                    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+                });
+                return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+            }
+
+            function contrastRatio(hex1, hex2) {
+                const l1 = luminance(...hexToRgb(hex1));
+                const l2 = luminance(...hexToRgb(hex2));
+                return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+            }
+
+            function updateContrastChecker() {
+                const fg = document.getElementById('picker-fg').value;
+                const bg = document.getElementById('picker-bg').value;
+                document.getElementById('fg-hex-label').textContent = fg.toUpperCase();
+                document.getElementById('bg-hex-label').textContent = bg.toUpperCase();
+
+                const box = document.getElementById('contrast-preview-box');
+                box.style.color = fg;
+                box.style.backgroundColor = bg;
+
+                const ratio = contrastRatio(fg, bg);
+                const label = ratio.toFixed(1) + ':1';
+                const badge = document.getElementById('checker-wcag-badge');
+
+                if (ratio >= 7.0) {
+                    badge.textContent = `LULUS AAA (${label})`;
+                    badge.className = 'px-2.5 py-1 dynamic-rounded text-xs font-mono font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
+                } else if (ratio >= 4.5) {
+                    badge.textContent = `LULUS AA (${label})`;
+                    badge.className = 'px-2.5 py-1 dynamic-rounded text-xs font-mono font-bold bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30';
+                } else {
+                    badge.textContent = `KONTRAS RENDAH (${label})`;
+                    badge.className = 'px-2.5 py-1 dynamic-rounded text-xs font-mono font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30';
+                }
+            }
+
+            document.getElementById('picker-fg').addEventListener('input', updateContrastChecker);
+            document.getElementById('picker-bg').addEventListener('input', updateContrastChecker);
+
+            document.querySelectorAll('.vision-sim-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.vision-sim-btn').forEach(b => {
+                        b.className = 'vision-sim-btn w-full text-left p-3 dynamic-rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/70 hover:border-accent-400 flex items-center justify-between transition';
+                        b.querySelector('i').className = 'fa-regular fa-circle text-slate-400';
+                    });
+                    btn.className = 'vision-sim-btn w-full text-left p-3 dynamic-rounded border-2 border-accent-500 bg-accent-500/10 flex items-center justify-between transition';
+                    btn.querySelector('i').className = 'fa-solid fa-circle-check text-accent-500';
+
+                    const mode = btn.getAttribute('data-vision');
+                    document.body.classList.remove('sim-deuteranopia', 'sim-high-contrast');
+                    if (mode === 'deuteranopia') document.body.classList.add('sim-deuteranopia');
+                    if (mode === 'high-contrast') document.body.classList.add('sim-high-contrast');
+                    showToast('Simulator Penglihatan Aktif', `Mode tampilan: ${mode.toUpperCase()}.`, 'info');
+                });
+            });
+
+            // =================================================================
+            // 5. GENERATE 124 MODULAR COMPONENTS WITH MINI-PREVIEWS
+            // =================================================================
+            const catalogSpec = [
+                {
+                    cat: 'Foundations',
+                    label: 'Foundations & Tokens',
+                    items: [
+                        'Primary Accent Palette', 'Semantic Status Tokens', 'Surface Elevation Dark', 'Surface Elevation Light',
+                        'Display Heading Scale', 'Monospace Code Tokens', '4px Spatial Grid System', 'Dynamic Border Radius',
+                        'Luminous Hairline Border', 'Glassmorphism Backdrop', 'WCAG AAA Contrast Guard', 'Spring Physics Easing',
+                        'Focus Ring Accessibility', 'Z-Index Elevation Layers', 'Responsive Breakpoints', 'Fluid 12-Column Grid',
+                        'Aurora Mesh Gradient', 'Dot-Grid Blueprint Pattern', 'Icon Sizing Scale', 'Custom Scrollbar Token'
+                    ]
+                },
+                {
+                    cat: 'ActionsInputs',
+                    label: 'Actions & Inputs',
+                    items: [
+                        'Primary Ripple Button', 'Secondary Soft Button', 'Outline Ghost Button', 'Destructive Action Button',
+                        'Loading Spinner Button', 'Split Action Button Group', 'Floating Label Input', 'Validated Email Input',
+                        'Password Strength Meter', 'Search Input with ⌘K', 'Currency Prefix Input', 'Auto-Resize Textarea',
+                        'Searchable Combobox', 'Multi-Select Filter Chips', 'OTP 4-Digit Verification', 'Spring Toggle Switch',
+                        'Indeterminate Checkbox', 'Radio Selection Card', 'Interactive Range Slider', 'Drag & Drop File Upload',
+                        'Date Range Picker', 'Color Swatch Picker', 'Star Rating Control', 'Stepper Number Counter'
+                    ]
+                },
+                {
+                    cat: 'Navigation',
+                    label: 'Navigation & Layout',
+                    items: [
+                        'Sticky Glass Navbar', 'Collapsible Studio Sidebar', 'Segmented Control Tabs', 'Underline Animated Tabs',
+                        'Sliding Pill Filter Bar', 'Breadcrumb Trail', 'Horizontal Stepper 3-Step', 'Vertical Wizard Stepper',
+                        'Numbered Pagination', 'Command Palette Modal', 'Dropdown Context Menu', 'Mega Menu Flyout',
+                        'Mobile Bottom Tab Bar', 'Accordion Single Expand', 'Accordion Multi Expand', 'Sticky Table of Contents',
+                        'Split Bento Grid Layout', 'Masonry Card Grid', 'Floating Back-to-Top', 'Skip to Main Content Link'
+                    ]
+                },
+                {
+                    cat: 'DataFeedback',
+                    label: 'Data Display & Feedback',
+                    items: [
+                        'KPI Metric Delta Card', 'Sparkline Trend Widget', 'Avatar Circle & Status', 'Stacked Avatar Group',
+                        'Solid Status Badge', 'Soft Pulse Dot Badge', 'Linear Progress Bar', 'Circular Progress Ring',
+                        'Skeleton Card Shimmer', 'Sortable Data Table', 'Key-Value Description List', 'Vertical Event Timeline',
+                        'Syntax Highlighted Code', 'Keyboard Shortcut Pill', 'Empty State Illustration', 'Live Toast Notification',
+                        'Dismissible Alert Banner', 'Top Dynamic Tooltip', 'Interactive Rich Popover', 'Connection Status Pill',
+                        'Audit Activity Row', 'System Health Meter', 'Tag Removable Chip', 'Confetti Celebration Trigger'
+                    ]
+                },
+                {
+                    cat: 'Overlays',
+                    label: 'Overlays & Modals',
+                    items: [
+                        'Standard Dialog Modal', 'Confirmation Danger Modal', 'Slide-Over Handoff Drawer', 'Mobile Bottom Sheet',
+                        'Lightbox Media Viewer', 'Cookie Consent Banner', 'Onboarding Spotlight Tour', 'Quick Preview Hover Card',
+                        'Full-Screen Search Overlay', 'Multi-Step Wizard Modal', 'Session Timeout Warning', 'Keyboard Shortcut Sheet',
+                        'Share & Permissions Modal', 'Export Code Dialog', 'Notification Center Drawer', 'Filter Facets Drawer',
+                        'Announcement Top Bar', 'Contextual Action Sheet'
+                    ]
+                },
+                {
+                    cat: 'CommerceSaaS',
+                    label: 'Commerce & SaaS Blocks',
+                    items: [
+                        'SaaS Pricing Tier Card', 'Billing Toggle Monthly/Yearly', 'Feature Comparison Matrix', 'Checkout Summary Card',
+                        'Promo Code Input Box', 'Credit Card Visual Preview', 'Invoice History Table', 'API Key Generator Box',
+                        'Team Member Invite Row', 'Usage Quota Progress Card', 'Changelog Release Card', 'Testimonial Quote Card',
+                        'Hero Bento Showcase', 'Integration App Card', 'Security 2FA Setup Card', 'Subscription Upgrade Banner',
+                        'Webhook Event Log Card', 'Customer Support Widget'
+                    ]
+                }
+            ];
+
+            function buildMiniPreview(cat, idx) {
+                const mod = idx % 4;
+                if (cat === 'Foundations') {
+                    if (mod === 0) return `<div class="flex gap-1.5"><span class="w-5 h-5 rounded-full bg-accent-400"></span><span class="w-5 h-5 rounded-full bg-accent-600"></span><span class="w-5 h-5 rounded-full bg-emerald-500"></span><span class="w-5 h-5 rounded-full bg-amber-500"></span></div>`;
+                    if (mod === 1) return `<div class="font-display font-extrabold text-sm text-slate-900 dark:text-white">Aa Bb Cc <span class="font-mono text-[10px] font-normal text-accent-500">16px</span></div>`;
+                    if (mod === 2) return `<div class="w-full h-3 rounded-full bg-gradient-to-r from-accent-500 via-cyan-400 to-purple-500"></div>`;
+                    return `<div class="px-2.5 py-1 rounded-md border border-dashed border-accent-500/60 font-mono text-[10px] text-accent-600 dark:text-accent-300">grid-cols-12 • gap-4</div>`;
+                }
+                if (cat === 'ActionsInputs') {
+                    if (mod === 0) return `<button type="button" class="btn-ripple px-3 py-1 dynamic-rounded bg-accent-600 text-white text-[11px] font-bold shadow-sm">Action</button>`;
+                    if (mod === 1) return `<div class="w-full px-2.5 py-1 dynamic-rounded bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-[10px] text-slate-400 font-mono">input@aether.ui</div>`;
+                    if (mod === 2) return `<button type="button" role="switch" aria-checked="true" class="spring-switch w-9 h-5 rounded-full bg-accent-600 p-0.5 flex items-center"><span class="spring-thumb w-4 h-4 rounded-full bg-white transform translate-x-4"></span></button>`;
+                    return `<div class="flex gap-1"><span class="px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-600 dark:text-accent-300 text-[10px] font-bold">Tag ✓</span><span class="px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-[10px]">Chip</span></div>`;
+                }
+                if (cat === 'Navigation') {
+                    if (mod === 0) return `<div class="inline-flex p-0.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-[10px] font-bold"><span class="px-2 py-0.5 rounded bg-white dark:bg-slate-950 text-accent-600">Tab 1</span><span class="px-2 py-0.5 text-slate-500">Tab 2</span></div>`;
+                    if (mod === 1) return `<div class="flex items-center gap-1 text-[10px] font-mono text-slate-500"><span>Home</span><span>/</span><span class="text-accent-500 font-bold">UI</span></div>`;
+                    if (mod === 2) return `<div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-accent-600 text-white text-[9px] flex items-center justify-center font-bold">1</span><span class="w-5 h-0.5 bg-accent-600"></span><span class="w-4 h-4 rounded-full bg-slate-300 dark:bg-slate-700 text-[9px] flex items-center justify-center">2</span></div>`;
+                    return `<div class="px-2.5 py-1 rounded bg-slate-200/80 dark:bg-slate-800 font-mono text-[10px] text-slate-600 dark:text-slate-300">⌘K Quick Jump</div>`;
+                }
+                if (cat === 'DataFeedback') {
+                    if (mod === 0) return `<div class="flex items-center gap-2"><span class="font-mono font-extrabold text-sm">99.8%</span><span class="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500 text-[9px] font-bold">+4.2%</span></div>`;
+                    if (mod === 1) return `<div class="flex -space-x-1.5"><span class="w-6 h-6 rounded-full bg-indigo-500 text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-slate-900">A</span><span class="w-6 h-6 rounded-full bg-emerald-500 text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-slate-900">B</span><span class="w-6 h-6 rounded-full bg-amber-500 text-slate-950 text-[9px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-slate-900">+9</span></div>`;
+                    if (mod === 2) return `<div class="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div class="w-3/4 h-full bg-accent-600 rounded-full"></div></div>`;
+                    return `<div class="w-full space-y-1.5"><div class="h-2 rounded skeleton-shimmer w-3/4"></div><div class="h-2 rounded skeleton-shimmer w-1/2"></div></div>`;
+                }
+                if (cat === 'Overlays') {
+                    if (mod === 0) return `<div class="px-3 py-1.5 dynamic-rounded bg-white dark:bg-slate-950 border border-accent-500/40 shadow text-[10px] font-semibold flex items-center gap-1.5"><i class="fa-solid fa-window-maximize text-accent-500"></i>Modal Dialog</div>`;
+                    if (mod === 1) return `<div class="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-[10px] font-mono">Tooltip Preview ▲</div>`;
+                    if (mod === 2) return `<div class="px-2.5 py-1 dynamic-rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-300 text-[10px] font-bold">✓ Toast Ready</div>`;
+                    return `<div class="w-full flex justify-end"><div class="w-1/2 h-6 rounded-l-lg bg-accent-500/20 border-l-2 border-accent-500 flex items-center px-2 text-[9px] font-mono">Drawer</div></div>`;
+                }
+                // CommerceSaaS
+                if (mod === 0) return `<div class="font-display font-extrabold text-sm text-accent-600 dark:text-accent-400">Rp 299rb<span class="text-[10px] font-normal text-slate-400">/bln</span></div>`;
+                if (mod === 1) return `<div class="px-2.5 py-1 rounded bg-slate-950 text-emerald-400 font-mono text-[10px] truncate w-full">sk_live_98a7f...</div>`;
+                if (mod === 2) return `<div class="flex items-center gap-1 text-amber-400 text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>`;
+                return `<div class="px-2.5 py-1 dynamic-rounded bg-accent-600/15 text-accent-700 dark:text-accent-300 text-[10px] font-bold">Pro Workspace ✨</div>`;
+            }
+
+            const allComponents = [];
+            let seq = 1;
+            catalogSpec.forEach(group => {
+                group.items.forEach((name, idx) => {
+                    const id = `AUI-${String(seq).padStart(3, '0')}`;
+                    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    const wcag = seq % 3 === 0 ? 'AA 5.8:1' : 'AAA 14.2:1';
+                    const figmaPath = `${group.label}/${name.replace(/\s+/g, '')}`;
+
+                    const htmlCode = `<!-- ${name} (${id}) — AetherUI v4.5 -->\n<div class="aether-${slug} rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white transition-all duration-300 hover:border-accent-500 focus-visible:ring-2 focus-visible:ring-accent-400">\n  <span class="text-xs font-bold">${name}</span>\n</div>`;
+
+                    const reactCode = `import React from 'react';\n\nexport function ${name.replace(/[^a-zA-Z0-9]/g, '')}() {\n  return (\n    <div className="rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-all hover:border-indigo-500">\n      <span className="text-xs font-bold">${name}</span>\n    </div>\n  );\n}`;
+
+                    const figmaJson = JSON.stringify({
+                        component: figmaPath,
+                        id: id,
+                        tokens: {
+                            borderRadius: state.radius,
+                            contrastTarget: wcag,
+                            motionCurve: "cubic-bezier(0.34, 1.56, 0.64, 1)"
+                        }
+                    }, null, 2);
+
+                    allComponents.push({
+                        id,
+                        name,
+                        cat: group.cat,
+                        catLabel: group.label,
+                        wcag,
+                        figmaPath,
+                        previewHtml: buildMiniPreview(group.cat, idx),
+                        htmlCode,
+                        reactCode,
+                        figmaJson
+                    });
+                    seq++;
+                });
+            });
+
+            function renderDirectoryGrid() {
+                const grid = document.getElementById('components-directory-grid');
+                const q = state.searchQuery.toLowerCase().trim();
+
+                const filtered = allComponents.filter(item => {
+                    const matchCat = state.selectedCategory === 'ALL' || item.cat === state.selectedCategory;
+                    const matchQ = !q || item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q) || item.catLabel.toLowerCase().includes(q);
+                    return matchCat && matchQ;
+                });
+
+                document.getElementById('directory-count-badge').textContent = `${filtered.length} Komponen`;
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full luminous-card p-10 text-center text-xs font-mono text-slate-500">Tidak ditemukan komponen yang cocok dengan pencarian "${state.searchQuery}".</div>`;
+                    return;
+                }
+
+                grid.innerHTML = filtered.map(c => `
+                    <article class="luminous-card p-4 flex flex-col justify-between gap-3 group hover:-translate-y-1">
+                        <div>
+                            <!-- Top Meta -->
+                            <div class="flex items-center justify-between gap-2 mb-2.5">
+                                <span class="text-[10px] font-mono font-bold text-accent-600 dark:text-accent-400">${c.id}</span>
+                                <div class="flex items-center gap-1">
+                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-500/12 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">${c.wcag}</span>
+                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-slate-200/70 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Figma</span>
+                                </div>
+                            </div>
+
+                            <!-- Interactive Mini Preview Stage -->
+                            <div class="h-16 px-3 dynamic-rounded bg-slate-100/80 dark:bg-slate-950/75 border border-slate-200/70 dark:border-slate-800/80 flex items-center justify-center overflow-hidden mb-3">
+                                ${c.previewHtml}
+                            </div>
+
+                            <!-- Component Title -->
+                            <h3 class="font-display text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400 transition">${c.name}</h3>
+                            <p class="text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-0.5 truncate">${c.figmaPath}</p>
+                        </div>
+
+                        <!-- Action Footer -->
+                        <div class="flex items-center gap-1.5 pt-2.5 border-t border-slate-200/70 dark:border-slate-800/80">
+                            <button type="button" data-id="${c.id}" class="btn-quick-copy flex-1 py-1.5 px-2.5 dynamic-rounded bg-slate-100 dark:bg-slate-900 hover:bg-accent-600 hover:text-white border border-slate-200 dark:border-slate-800 text-[11px] font-mono font-semibold transition">
+                                <i class="fa-regular fa-copy mr-1"></i>Salin Kode
+                            </button>
+                            <button type="button" data-id="${c.id}" class="btn-open-inspect py-1.5 px-2.5 dynamic-rounded bg-accent-500/15 hover:bg-accent-600 hover:text-white text-accent-700 dark:text-accent-300 text-[11px] font-mono font-semibold transition" title="Inspeksi & Handoff">
+                                <i class="fa-solid fa-code"></i>
+                            </button>
+                        </div>
+                    </article>
+                `).join('');
+
+                // Attach Quick Copy & Inspect Handlers
+                document.querySelectorAll('.btn-quick-copy').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const comp = allComponents.find(x => x.id === btn.getAttribute('data-id'));
+                        if (!comp) return;
+                        recordExploration(comp.id);
+                        copyTextSafe(comp.htmlCode);
+                        showToast(`Kode ${comp.id} Disalin`, `Markup "${comp.name}" siap ditempel ke proyek Anda.`, 'success');
+                    });
+                });
+
+                document.querySelectorAll('.btn-open-inspect').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const comp = allComponents.find(x => x.id === btn.getAttribute('data-id'));
+                        if (!comp) return;
+                        recordExploration(comp.id);
+                        openHandoffStudio(comp.name, comp.figmaPath, comp.wcag, comp.htmlCode, comp.reactCode, comp.figmaJson);
+                    });
+                });
+            }
+
+            // =================================================================
+            // 6. CATEGORY FILTERING & SEARCH SYNC
+            // =================================================================
+            function setCategoryFilter(cat) {
+                state.selectedCategory = cat;
+
+                document.querySelectorAll('.cat-pill-btn').forEach(btn => {
+                    const active = btn.getAttribute('data-cat') === cat;
+                    btn.className = active
+                        ? 'cat-pill-btn px-3.5 py-1.5 dynamic-rounded text-xs font-bold bg-accent-600 text-white shadow-sm shrink-0 transition'
+                        : 'cat-pill-btn px-3.5 py-1.5 dynamic-rounded text-xs font-semibold bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-accent-400 shrink-0 transition';
+                });
+
+                document.querySelectorAll('.sidebar-cat-btn').forEach(btn => {
+                    const active = btn.getAttribute('data-cat') === cat;
+                    btn.className = active
+                        ? 'sidebar-cat-btn w-full flex items-center justify-between px-3 py-2 dynamic-rounded font-bold bg-accent-600 text-white transition'
+                        : 'sidebar-cat-btn w-full flex items-center justify-between px-3 py-2 dynamic-rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition';
+                });
+
+                renderDirectoryGrid();
+            }
+
+            document.querySelectorAll('.cat-pill-btn, .sidebar-cat-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setCategoryFilter(btn.getAttribute('data-cat'));
+                    if (btn.classList.contains('sidebar-cat-btn')) {
+                        document.getElementById('sec-directory').scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            const globalSearch = document.getElementById('global-search-input');
+            const mobileSearch = document.getElementById('mobile-search-input');
+            [globalSearch, mobileSearch].forEach(inp => {
+                if (!inp) return;
+                inp.addEventListener('input', (e) => {
+                    state.searchQuery = e.target.value;
+                    if (globalSearch && inp !== globalSearch) globalSearch.value = state.searchQuery;
+                    if (mobileSearch && inp !== mobileSearch) mobileSearch.value = state.searchQuery;
+                    renderDirectoryGrid();
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    globalSearch.focus();
+                    document.getElementById('sec-directory').scrollIntoView({ behavior: 'smooth' });
+                    showToast('Pencarian Cepat (⌘K)', 'Ketik nama komponen untuk memfilter katalog 124 komponen.', 'info');
+                }
+            });
+
+            // =================================================================
+            // 7. HERO 3D TILT CARD, RIPPLE & SPRING SWITCH DELEGATION
+            // =================================================================
+            const tiltCard = document.getElementById('hero-tilt-card');
+            if (tiltCard) {
+                tiltCard.addEventListener('mousemove', (e) => {
+                    const rect = tiltCard.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    tiltCard.style.transform = `rotateY(${x * 16}deg) rotateX(${-y * 16}deg) scale(1.02)`;
+                });
+                tiltCard.addEventListener('mouseleave', () => {
+                    tiltCard.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+                });
+            }
+
+            // Global Ripple & Spring Switch Event Delegation
+            document.addEventListener('click', (e) => {
+                const rippleBtn = e.target.closest('.btn-ripple');
+                if (rippleBtn) {
+                    const rect = rippleBtn.getBoundingClientRect();
+                    const circle = document.createElement('span');
+                    const d = Math.max(rect.width, rect.height);
+                    circle.style.width = circle.style.height = `${d}px`;
+                    circle.style.left = `${e.clientX - rect.left - d / 2}px`;
+                    circle.style.top = `${e.clientY - rect.top - d / 2}px`;
+                    circle.classList.add('ripple-circle');
+                    rippleBtn.appendChild(circle);
+                    setTimeout(() => circle.remove(), 600);
+                }
+
+                const sw = e.target.closest('.spring-switch');
+                if (sw) {
+                    const checked = sw.getAttribute('aria-checked') === 'true';
+                    const next = !checked;
+                    sw.setAttribute('aria-checked', String(next));
+                    const thumb = sw.querySelector('.spring-thumb');
+                    if (next) {
+                        sw.classList.remove('bg-slate-300', 'dark:bg-slate-700');
+                        sw.classList.add('bg-accent-600');
+                        thumb.classList.add('translate-x-5');
+                    } else {
+                        sw.classList.remove('bg-accent-600');
+                        sw.classList.add('bg-slate-300', 'dark:bg-slate-700');
+                        thumb.classList.remove('translate-x-5');
+                    }
+                }
+            });
+
+            // =================================================================
+            // 8. DEVELOPER HANDOFF MODAL (HTML, REACT JSX & FIGMA JSON)
+            // =================================================================
+            const handoffModal = document.getElementById('handoff-modal');
+
+            function openHandoffStudio(title, figmaPath, wcag, htmlCode, reactCode, figmaJson, defaultTab = 'html') {
+                state.activeHandoff = { html: htmlCode, react: reactCode, figma: figmaJson };
+                document.getElementById('handoff-modal-title').textContent = `Handoff: ${title}`;
+                document.getElementById('spec-figma-name').textContent = figmaPath;
+                document.getElementById('spec-radius-val').textContent = state.radius;
+                document.getElementById('spec-motion-val').textContent = state.motion;
+                document.getElementById('spec-wcag-val').textContent = wcag;
+
+                switchHandoffTab(defaultTab);
+                handoffModal.classList.remove('hidden');
+                handoffModal.classList.add('flex');
+            }
+
+            function switchHandoffTab(tab) {
+                document.querySelectorAll('.handoff-tab-btn').forEach(b => {
+                    const active = b.getAttribute('data-handoff-tab') === tab;
+                    b.className = active
+                        ? 'handoff-tab-btn px-3 py-1.5 dynamic-rounded font-bold bg-accent-600 text-white transition'
+                        : 'handoff-tab-btn px-3 py-1.5 dynamic-rounded text-slate-600 dark:text-slate-400 transition';
+                });
+                document.getElementById('handoff-code-content').textContent = state.activeHandoff[tab] || '';
+            }
+
+            document.querySelectorAll('.handoff-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchHandoffTab(btn.getAttribute('data-handoff-tab')));
+            });
+
+            document.getElementById('btn-close-handoff').addEventListener('click', () => {
+                handoffModal.classList.add('hidden');
+                handoffModal.classList.remove('flex');
+            });
+            handoffModal.addEventListener('click', (e) => {
+                if (e.target === handoffModal) {
+                    handoffModal.classList.add('hidden');
+                    handoffModal.classList.remove('flex');
+                }
+            });
+
+            document.getElementById('btn-copy-handoff-code').addEventListener('click', () => {
+                copyTextSafe(document.getElementById('handoff-code-content').textContent);
+                showToast('Kode Handoff Disalin', 'Token & kode komponen berhasil disalin ke clipboard.', 'success');
+            });
+
+            // Header Global Handoff Buttons
+            document.getElementById('btn-open-figma-tokens').addEventListener('click', () => {
+                const figmaGlobal = JSON.stringify({
+                    "$schema": "https://tr.designtokens.org/format/",
+                    "aetherUI": {
+                        "version": "4.5.0",
+                        "activeAccent": state.accent,
+                        "primaryColor": { "$value": accentPalettes[state.accent].hex, "$type": "color" },
+                        "borderRadius": { "$value": state.radius, "$type": "dimension" },
+                        "motionPhysics": { "$value": state.motion, "$type": "string" }
+                    }
+                }, null, 2);
+                openHandoffStudio('Global Figma Design Tokens', 'Variables/GlobalTheme', 'AAA 15.2:1', '<!-- Lihat tab Figma Tokens JSON -->', '// Lihat tab Figma Tokens JSON', figmaGlobal, 'figma');
+            });
+
+            document.getElementById('btn-open-tailwind-cfg').addEventListener('click', () => {
+                const twHtml = `<script src="https://cdn.tailwindcss.com"><\/script>\n<!-- Gunakan kelas dynamic-rounded & bg-accent-600 -->`;
+                const twReact = `// tailwind.config.js\nexport default {\n  darkMode: 'class',\n  theme: {\n    extend: {\n      borderRadius: { DEFAULT: '${state.radius}' },\n      colors: { accent: { 600: '${accentPalettes[state.accent].hex}' } }\n    }\n  }\n};`;
+                const twJson = JSON.stringify({ theme: state.accent, radius: state.radius, motion: state.motion }, null, 2);
+                openHandoffStudio('AetherUI Handoff Kit v4.5', 'System/TailwindConfig', 'AAA 15.2:1', twHtml, twReact, twJson, 'react');
+            });
+
+            // =================================================================
+            // 9. SAFE CLIPBOARD & TOAST NOTIFICATIONS
+            // =================================================================
+            function copyTextSafe(text) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                } catch (err) {
+                    // Fallback handled silently
+                }
+                document.body.removeChild(ta);
+            }
+
+            function showToast(title, message, type = 'info') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                const iconClass = type === 'success' ? 'fa-circle-check text-emerald-500' : 'fa-sparkles text-accent-500';
+
+                toast.className = 'pointer-events-auto luminous-card p-3.5 shadow-xl flex items-start gap-3 transition-all duration-300 transform translate-y-2 opacity-0';
+                toast.innerHTML = `
+                    <i class="fa-solid ${iconClass} mt-0.5 text-sm"></i>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-slate-900 dark:text-white">${title}</p>
+                        <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">${message}</p>
+                    </div>
+                `;
+                container.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-2');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            // =================================================================
+            // 10. INITIALIZATION ON WINDOW LOAD
+            // =================================================================
+            window.onload = function () {
+                applyAccent('indigo');
+                updateContrastChecker();
+                renderDirectoryGrid();
+            };
+        })();
+    </script>
+</body>
+</html>
